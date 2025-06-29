@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (response.ok && data.success) {
                 localStorage.setItem('isLoggedIn', 'true');
-                window.location.href = '/admin';
+                window.location.href = '/admin.html';
             } else {
                 showError(data.error || 'Login failed. Please check your password.');
                 passwordInput.focus();

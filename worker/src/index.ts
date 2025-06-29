@@ -131,23 +131,46 @@ export default {
 			// --- Protected Admin Routes ---
 			const requireAuth = createAuthMiddleware(env);
 
-			// Admin UI endpoint (Protected)
-			if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+			// Admin UI endpoint (Protected) - New admin.html route
+			if (pathname === '/admin.html') {
 				return requireAuth(request, async () => {
-					// Serve static assets for the admin UI (HTML, CSS, JS)
-					const adminPath = pathname === '/admin' || pathname === '/admin/' ? '/admin/index.html' : pathname;
+					// Serve the admin.html file
 					const assetUrl = new URL(url);
-					assetUrl.pathname = adminPath;
+					assetUrl.pathname = '/admin.html';
 					const modifiedRequest = new Request(assetUrl.toString(), request);
 					try {
 						const assetResponse = await env.ASSETS.fetch(modifiedRequest);
 						if (assetResponse.status === 404) {
-							return new Response(`Admin asset not found: ${adminPath}`, { status: 404 });
+							return new Response(`Admin page not found: /admin.html`, { status: 404 });
+						}
+						return assetResponse;
+					} catch (e) {
+						console.error("Error fetching admin page:", e);
+						return new Response(`Error fetching admin page: /admin.html`, { status: 500 });
+					}
+				});
+			}
+
+			// Legacy admin route compatibility and admin assets
+			if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+				return requireAuth(request, async () => {
+					// For legacy /admin route, redirect to /admin.html
+					if (pathname === '/admin' || pathname === '/admin/') {
+						return Response.redirect(url.origin + '/admin.html', 302);
+					}
+					// For admin assets (CSS, JS), serve them directly
+					const assetUrl = new URL(url);
+					assetUrl.pathname = pathname;
+					const modifiedRequest = new Request(assetUrl.toString(), request);
+					try {
+						const assetResponse = await env.ASSETS.fetch(modifiedRequest);
+						if (assetResponse.status === 404) {
+							return new Response(`Admin asset not found: ${pathname}`, { status: 404 });
 						}
 						return assetResponse;
 					} catch (e) {
 						console.error("Error fetching admin asset:", e);
-						return new Response(`Error fetching admin asset: ${adminPath}`, { status: 500 });
+						return new Response(`Error fetching admin asset: ${pathname}`, { status: 500 });
 					}
 				});
 			}
@@ -166,7 +189,7 @@ export default {
 			if (pathname === '/') {
 				const sessionValid = await verifySessionCookie(request, env);
 				if (sessionValid) {
-					return Response.redirect(url.origin + '/admin', 302);
+					return Response.redirect(url.origin + '/admin.html', 302);
 				} else {
 					// Directly serve login.html for the root path if not logged in
 					const loginUrl = new URL(url);
@@ -2110,7 +2133,7 @@ function createAuthMiddleware(env: Env) {
 		const isAuthenticated = await verifySessionCookie(request, env);
 
 		if (!isAuthenticated) {
-			const loginUrl = new URL(url.origin + '/login');
+			const loginUrl = new URL(url.origin + '/login.html');
 			return Response.redirect(loginUrl.toString(), 302);
 		}
 
@@ -2163,7 +2186,7 @@ function handleLogoutRequest(): Response {
 		status: 302,
 		headers: {
 			'Set-Cookie': cookieHeader,
-			'Location': '/login'
+			'Location': '/login.html'
 		}
 	});
 }

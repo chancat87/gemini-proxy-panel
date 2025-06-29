@@ -6,8 +6,8 @@
     <title>Gemini Proxy Panel</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="style.css">
-    <script src="../i18n.js"></script>
+    <link rel="stylesheet" href="admin/style.css">
+    <script src="i18n.js"></script>
     <style>
         /* Hide dropdown arrow for datalist inputs */
         input::-webkit-calendar-picker-indicator {
@@ -270,11 +270,11 @@
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
                 if (!isLoggedIn) {
-                    window.location.href = '/login';
+                    window.location.href = '/login.html';
                 }
             } catch (e) {
                 console.error('Auth check error:', e);
-                window.location.href = '/login';
+                window.location.href = '/login.html';
             }
         })();
     </script>
@@ -285,7 +285,7 @@
         <div class="bg-white p-8 rounded-lg shadow-xl text-center">
             <div class="loader mx-auto mb-4"></div>
             <p class="text-lg text-gray-700" data-i18n="verifying_identity">正在验证身份...</p>
-            <p class="text-sm text-gray-500 mt-2"><span data-i18n="auth_check_timeout">如果页面长时间无响应，请</span> <a href="/login" class="text-blue-600 hover:underline" data-i18n="return_to_login">返回登录页面</a></p>
+            <p class="text-sm text-gray-500 mt-2"><span data-i18n="auth_check_timeout">如果页面长时间无响应，请</span> <a href="/login.html" class="text-blue-600 hover:underline" data-i18n="return_to_login">返回登录页面</a></p>
         </div>
     </div>
     <!-- Unauthorized UI -->
@@ -298,7 +298,7 @@
             </div>
             <h2 class="text-xl font-bold text-gray-800 mb-4">Unauthorized Access</h2>
             <p class="text-gray-600 mb-6" data-i18n="need_login_message">您需要登录才能访问管理页面。</p>
-            <a href="/login" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline inline-block" data-i18n="go_to_login">
+            <a href="/login.html" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline inline-block" data-i18n="go_to_login">
                 前往登录
             </a>
         </div>
@@ -520,6 +520,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="admin/script.js"></script>
 </body>
 </html>

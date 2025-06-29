@@ -260,7 +260,7 @@ function hideError(container = errorMessageDiv) {
             if (response.status === 401 || response.status === 403) {
                 console.log("Authentication required or session expired. Redirecting to login.");
                 localStorage.removeItem('isLoggedIn');
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return null;
             }
             
@@ -268,11 +268,11 @@ function hideError(container = errorMessageDiv) {
             if (response.redirected) {
                 const redirectUrl = new URL(response.url);
                 // Check if redirected to login page or similar auth pages
-                if (redirectUrl.pathname.includes('login') || 
+                if (redirectUrl.pathname.includes('login') ||
                     !redirectUrl.pathname.includes('/api/admin')) {
                     console.log("Detected redirect to login page. Session likely expired.");
                     localStorage.removeItem('isLoggedIn');
-                    window.location.href = '/login';
+                    window.location.href = '/login.html';
                     return null;
                 }
             }
@@ -281,7 +281,7 @@ function hideError(container = errorMessageDiv) {
             if (response.status >= 300 && response.status < 400) {
                 console.log(`Redirect status detected: ${response.status}. Handling potential auth issue.`);
                 localStorage.removeItem('isLoggedIn');
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return null;
             }
 
@@ -1629,7 +1629,7 @@ async function renderGeminiKeys(keys) {
     async function checkAuth() {
         try {
             if (localStorage.getItem('isLoggedIn') !== 'true') {
-                window.location.href = '/login';
+                window.location.href = '/login.html';
                 return false;
             }
 
@@ -1641,21 +1641,21 @@ async function renderGeminiKeys(keys) {
             // Check for redirects that might indicate auth issues
             if (response.redirected) {
                 const redirectUrl = new URL(response.url);
-                if (redirectUrl.pathname.includes('login') || 
+                if (redirectUrl.pathname.includes('login') ||
                     !redirectUrl.pathname.includes('/api/admin')) {
                     console.log('Detected redirect to login page. Session likely expired.');
                     localStorage.removeItem('isLoggedIn');
-                    window.location.href = '/login';
+                    window.location.href = '/login.html';
                     return false;
                 }
             }
 
             if (!response.ok) {
-                if (response.status === 401 || response.status === 403 || 
+                if (response.status === 401 || response.status === 403 ||
                     (response.status >= 300 && response.status < 400)) {
                     console.log(`User is not authorized. Auth check failed with status: ${response.status}. Redirecting to login page.`);
                     localStorage.removeItem('isLoggedIn');
-                    window.location.href = '/login';
+                    window.location.href = '/login.html';
                 }
                 return false;
             }
@@ -1669,7 +1669,7 @@ async function renderGeminiKeys(keys) {
         } catch (error) {
             console.error('Authorization check failed:', error);
             localStorage.removeItem('isLoggedIn');
-            window.location.href = '/login';
+            window.location.href = '/login.html';
             return false;
         }
     }
@@ -1720,7 +1720,7 @@ async function renderGeminiKeys(keys) {
                 try {
                     localStorage.removeItem('isLoggedIn'); // Clear local login status
                     const response = await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-                    window.location.href = '/login';
+                    window.location.href = '/login.html';
                 } catch (error) {
                     showError('Error during logout.');
                 } finally {
@@ -1772,20 +1772,20 @@ async function renderGeminiKeys(keys) {
                 
                 if (response.redirected) {
                     const redirectUrl = new URL(response.url);
-                    if (redirectUrl.pathname.includes('login') || 
+                    if (redirectUrl.pathname.includes('login') ||
                         !redirectUrl.pathname.includes('/api/admin')) {
                         console.log('Session expired during scheduled check. Redirecting to login.');
                         localStorage.removeItem('isLoggedIn');
-                        window.location.href = '/login';
+                        window.location.href = '/login.html';
                     }
                 }
                 
                 if (!response.ok) {
-                    if (response.status === 401 || response.status === 403 || 
+                    if (response.status === 401 || response.status === 403 ||
                         (response.status >= 300 && response.status < 400)) {
                         console.log(`Auth check failed with status: ${response.status}. Redirecting to login.`);
                         localStorage.removeItem('isLoggedIn');
-                        window.location.href = '/login';
+                        window.location.href = '/login.html';
                     }
                 }
             } catch (error) {

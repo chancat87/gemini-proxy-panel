@@ -56,9 +56,9 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // --- Basic Routes ---
 
-// Root route: Redirects to /admin/index.html if logged in, otherwise requireAdminAuth redirects to /login.html
-app.get('/', (req, res) => {
-    res.redirect('/login.html');
+// Root route: Redirects to /admin.html if logged in, otherwise requireAdminAuth redirects to /login.html
+app.get('/', requireAdminAuth, (req, res) => {
+    res.redirect('/admin.html');
 });
 
 // Redirect /login to the static HTML file
@@ -67,11 +67,14 @@ app.get('/login', (req, res) => {
 });
 
 // Admin route: Protect the route and serve the static file
-app.get('/admin', requireAdminAuth, (req, res) => {
-    res.redirect('/admin/'); // Redirect to the directory path
+app.get('/admin.html', requireAdminAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
 });
 
-app.use('/admin', requireAdminAuth, express.static(path.join(__dirname, '..', 'public', 'admin')));
+// Legacy admin route compatibility: Redirect old /admin path to new /admin.html
+app.get('/admin', requireAdminAuth, (req, res) => {
+    res.redirect('/admin.html');
+});
 
 // --- API Routes ---
 app.use('/api', authRoutes); 
@@ -118,13 +121,13 @@ app.listen(port, '0.0.0.0', () => {
     
     // Check if running in Hugging Face Space
     if (process.env.HUGGING_FACE === '1' && process.env.SPACE_HOST) {
-        const adminUrl = `https://${process.env.SPACE_HOST}/admin`;
+        const adminUrl = `https://${process.env.SPACE_HOST}`;
         const endpointUrl = `https://${process.env.SPACE_HOST}/v1`;
         console.log(`Hugging Face Space Admin UI: ${adminUrl}`);
         console.log(`Hugging Face Space Endpoint: ${endpointUrl}`);
     } else {
         // Fallback for local or other environments
-        const adminUrl = `http://localhost:${port}/admin`;
+        const adminUrl = `http://localhost:${port}`;
         const endpointUrl = `http://localhost:${port}/v1`;
         console.log(`Admin UI available at: ${adminUrl} (or the server's public address)`);
         console.log(`API Endpoint available at: ${endpointUrl} (or the server's public address)`);
